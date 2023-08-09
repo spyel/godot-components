@@ -1,0 +1,51 @@
+[gd_scene load_steps=9 format=3 uid="uid://k1grewlmqi08"]
+
+[ext_resource type="Script" path="res://examples/test/character.gd" id="1_a2p5f"]
+[ext_resource type="Script" path="res://addons/godot-components/components/velocity_component.gd" id="2_qsapv"]
+[ext_resource type="Script" path="res://addons/godot-components/components/health_component.gd" id="4_63o53"]
+[ext_resource type="Script" path="res://addons/godot-components/components/hurtbox_component.gd" id="5_fdndg"]
+[ext_resource type="Script" path="res://addons/godot-components/components/hitbox_component.gd" id="6_rl8x8"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qnc4u"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1005n"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_jtyn3"]
+
+[node name="Test" type="Node"]
+
+[node name="Character" type="CharacterBody2D" parent="."]
+script = ExtResource("1_a2p5f")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Character"]
+shape = SubResource("RectangleShape2D_qnc4u")
+
+[node name="VelocityComponent" type="Node" parent="Character"]
+script = ExtResource("2_qsapv")
+
+[node name="HealthComponent" type="Node" parent="Character"]
+script = ExtResource("4_63o53")
+max_health = 20.0
+current_health = 20.0
+
+[node name="HurtboxComponent" type="Area2D" parent="Character" node_paths=PackedStringArray("health_component")]
+input_pickable = false
+monitorable = false
+script = ExtResource("5_fdndg")
+health_component = NodePath("../HealthComponent")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Character/HurtboxComponent"]
+shape = SubResource("RectangleShape2D_1005n")
+
+[node name="HitboxComponent" type="Area2D" parent="."]
+position = Vector2(156, 136)
+input_pickable = false
+monitoring = false
+script = ExtResource("6_rl8x8")
+damage = 1.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxComponent"]
+shape = SubResource("RectangleShape2D_jtyn3")
+
+[connection signal="died" from="Character/HealthComponent" to="Character" method="_on_health_component_died"]
+[connection signal="health_changed" from="Character/HealthComponent" to="Character" method="_on_health_component_health_changed"]
